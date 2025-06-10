@@ -5,14 +5,17 @@ public class PlayerShooting : MonoBehaviour
 {
     [SerializeField] private Transform firePoint;
     [SerializeField] private float fireRate = 0.2f;
+    [SerializeField] private bool useInputSystem = true; // Toggle between Input System and traditional Input
     
     private float nextFireTime;
     private Camera mainCamera;
     private bool isShooting;
+    private Mouse mouse;
     
     private void Start()
     {
         mainCamera = Camera.main;
+        mouse = Mouse.current;
         
         // Create fire point if it doesn't exist
         if (firePoint == null)
@@ -26,6 +29,21 @@ public class PlayerShooting : MonoBehaviour
     
     private void Update()
     {
+        // Handle input based on the selected method
+        if (useInputSystem)
+        {
+            // Double-check mouse state to ensure we stop shooting when button is released
+            if (mouse != null && !mouse.leftButton.isPressed)
+            {
+                isShooting = false;
+            }
+        }
+        else
+        {
+            // Traditional Input method as fallback
+            isShooting = Input.GetMouseButton(0);
+        }
+        
         if (isShooting && Time.time >= nextFireTime)
         {
             Shoot();
@@ -33,9 +51,14 @@ public class PlayerShooting : MonoBehaviour
         }
     }
     
-    // Called by the Input System when mouse button is pressed
+    // Called by the Input System when mouse button is pressed/released
     public void OnAttack(UnityEngine.InputSystem.InputValue value)
     {
+        if (!useInputSystem)
+        {
+            return; // Skip if using traditional input
+        }
+
         isShooting = value.isPressed;
     }
     
