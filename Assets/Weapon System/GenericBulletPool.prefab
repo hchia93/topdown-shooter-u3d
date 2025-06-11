@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7142742831122983073}
   - component: {fileID: 7009635327745684789}
   m_Layer: 0
-  m_Name: BulletPool
+  m_Name: GenericBulletPool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

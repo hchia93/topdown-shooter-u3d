@@ -3,27 +3,23 @@ using UnityEngine.InputSystem;
 
 public class PlayerShooting : MonoBehaviour
 {
-    [SerializeField] private Transform firePoint;
-    [SerializeField] private float fireRate = 0.2f;
     [SerializeField] private bool useInputSystem = true; // Toggle between Input System and traditional Input
     
-    private float nextFireTime;
     private Camera mainCamera;
     private bool isShooting;
     private Mouse mouse;
+    private WeaponSystem weaponSystem;
     
     private void Start()
     {
         mainCamera = Camera.main;
         mouse = Mouse.current;
         
-        // Create fire point if it doesn't exist
-        if (firePoint == null)
+        // Get the weapon system component
+        weaponSystem = GetComponent<WeaponSystem>();
+        if (weaponSystem == null)
         {
-            GameObject firePointObj = new GameObject("FirePoint");
-            firePointObj.transform.SetParent(transform);
-            firePointObj.transform.localPosition = new Vector3(0, 0.5f, 0); // Adjust this position as needed
-            firePoint = firePointObj.transform;
+            Debug.LogError("WeaponSystem component not found on player!");
         }
     }
     
@@ -44,10 +40,9 @@ public class PlayerShooting : MonoBehaviour
             isShooting = Input.GetMouseButton(0);
         }
         
-        if (isShooting && Time.time >= nextFireTime)
+        if (isShooting && weaponSystem != null && weaponSystem.CanFire())
         {
-            Shoot();
-            nextFireTime = Time.time + fireRate;
+            weaponSystem.Fire();
         }
     }
     
@@ -62,19 +57,13 @@ public class PlayerShooting : MonoBehaviour
         isShooting = value.isPressed;
     }
     
-    private void Shoot()
+    // Method to get current weapon info (useful for UI)
+    public string GetCurrentWeaponInfo()
     {
-        if (BulletPool.Instance == null)
+        if (weaponSystem != null)
         {
-            Debug.LogError("BulletPool instance not found!");
-            return;
+            return weaponSystem.GetCurrentWeaponInfo();
         }
-        
-        // Get bullet from pool
-        GameObject bullet = BulletPool.Instance.GetBullet();
-        
-        // Set bullet position and rotation
-        bullet.transform.position = firePoint.position;
-        bullet.transform.rotation = firePoint.rotation;
+        return "No Weapon System";
     }
 } 

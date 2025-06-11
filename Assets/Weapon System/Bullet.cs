@@ -26,9 +26,9 @@ public class Bullet : MonoBehaviour
     
     private void ReturnToPool()
     {
-        if (BulletPool.Instance != null)
+        if (GenericBulletPool.Instance != null)
         {
-            BulletPool.Instance.ReturnBullet(gameObject);
+            GenericBulletPool.Instance.ReturnBullet(gameObject);
         }
     }
     
